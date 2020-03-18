@@ -6,6 +6,7 @@ import useVant from '../views/useVant'
 import Login from '../views/login'
 // 导入home页
 import home from '../views/home'
+import Layout from '../views/layout'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -15,12 +16,23 @@ const router = new VueRouter({
       component: useVant
     },
     {
-      path: '/home',
-      component: home
+      path: '/',
+      redirect: '/home'
     },
     {
       path: '/login',
       component: Login
+    },
+    {
+      path: '/layout',
+      component: Layout,
+      children: [
+        {
+          path: '/home',
+          component: home
+        }
+      ]
+
     }
   ]
 })
