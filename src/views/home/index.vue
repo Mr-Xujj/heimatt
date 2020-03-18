@@ -3,65 +3,116 @@
       <!-- NavBar 导航栏 -->
     <van-nav-bar fixed="" class="navbar-login" title="首页" />
     <!-- Tab标签页 -->
-    <van-tabs>
-  <van-tab v-for="(item, index) in 8" :title="'标签 ' + index" :key="index">
+    <van-tabs v-model="active">
+  <van-tab v-for="(item, index) in channelList" :title="item.name" :key="index">
     <!-- 下拉刷新 -->
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+    <van-pull-refresh v-model="item.isloading" @refresh="onRefresh">
     <!-- list 上拉加载更多 -->
     <van-list
-  v-model="loading"
-  :finished="finished"
+  v-model="item.loading"
+  :finished="item.finished"
   finished-text="没有更多了"
   @load="onLoad">
-  <van-cell v-for="(item, index) in list" :key="index" :title="item" />
+  <van-cell class="mycell" v-for="(item, index) in item.list" :key="index" :title="item.title" />
 </van-list>
 </van-pull-refresh>
   </van-tab>
+</van-tabs>
   <div class="mymenu">
       <van-icon name="wap-nav" />
     </div>
-</van-tabs>
+<!-- 弹出层 -->
   </div>
 </template>
 
 <script>
+import { apiChannel } from '../../api/channel'
+import { getLocal } from '../../utils/local'
+import { apiGetArticleList } from '../../api/aritcle'
 export default {
   data () {
     return {
-      list: [],
-      // 是否处于加载状态
-      loading: false,
-      // 数据是否加载完毕
-      finished: false,
-      count: 0,
-      isLoading: false
+      // list: [],
+      // // 是否处于加载状态
+      // loading: false,
+      // // 数据是否加载完毕
+      // finished: false,
+      // count: 0,
+      // isLoading: false,
+      // 频道数据
+      channelList: [],
+      active: 0
     }
   },
   methods: {
-    onLoad () {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-
-        // 加载状态结束
-        this.loading = false
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 1000)
+    // list 的事件：当 list 组件被加载时会执行
+    async onLoad () {
+      // 得到当前频道
+      const currentChannle = this.channelList[this.active]
+      // 得到当前频道对应的 id
+      const id = currentChannle.id
+      // 得到当前频道下的文章数据
+      const res = await apiGetArticleList({
+        channelid: id,
+        timestamp: Date.now()
+      })
+      // 将文章列表数据保存到当前频道下面的 list 属性中
+      currentChannle.list = [...currentChannle.list, ...res.data.data.results]
+      // 判断返回数据的长度
+      if (res.data.data.results.length === 0) {
+        // 将 list 的加载完毕状态设置为 true
+        currentChannle.finished = true
+      }
+      // 手动设置 loading 为 false
+      currentChannle.loading = false
     },
+    // pullrefresh 的事件：当组件被下拉时执行
     onRefresh () {
-      setTimeout(() => {
-        this.$toast('刷新成功')
-        this.isLoading = false
-        this.count++
-      }, 1000)
+      // 得到当前频道数据
+      const currentChannel = this.channelList[this.active]
+      // 清除当前频道中的所有的数据
+      currentChannel.loading = false
+      currentChannel.finished = false
+      currentChannel.list = []
+      currentChannel.isloading = false
+      // 重新加载数据
+      this.onLoad()
+    },
+    addOtherProp () {
+      this.channelList.forEach(item => {
+        this.$set(item, 'loading', false)
+        this.$set(item, 'finished', false)
+        this.$set(item, 'isloading', false)
+        this.$set(item, 'list', [])
+      })
     }
+  },
+  async created () {
+    // 得到用户信息
+    const user = this.$store.state.user
+    window.console.log(user)
+    try {
+      // 判断是否登录
+      if (user.token) {
+        // 登录直接发请求获取数据
+        const res = await apiChannel()
+        // window.console.log(res)
+        this.channelList = res.data.data.channels
+      } else {
+        // 没有登陆判断是否操作过默认数据
+        const channels = getLocal('channels')
+        if (channels) {
+          this.channelList = channels
+        } else {
+          const res = await apiChannel()
+          // window.console.log(res)
+          this.channelList = res.data.data.channels
+        }
+      }
+    } catch {
+      this.$toast.fail('出错了')
+    }
+    this.addOtherProp()
   }
 
 }
@@ -96,5 +147,9 @@ export default {
   text-align: center;
   font-weight: 700
 }
+.mycell {
+  height: 150px;
 }
+}
+
 </style>

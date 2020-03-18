@@ -31,7 +31,7 @@ export default {
     return {
       // 输入信息
       obj: {
-        mobile: '13071637518',
+        mobile: '13911111111',
         code: '246810'
       },
       // 验证提示
