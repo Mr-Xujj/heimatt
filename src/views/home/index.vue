@@ -19,9 +19,11 @@
   </van-tab>
 </van-tabs>
   <div class="mymenu">
-      <van-icon name="wap-nav" />
+      <van-icon @click="openchannel" name="wap-nav" />
     </div>
 <!-- 弹出层 -->
+<!-- <mypop :value="show" @input="show=$event"/> -->
+<mypop v-model="show"/>
   </div>
 </template>
 
@@ -29,7 +31,12 @@
 import { apiChannel } from '../../api/channel'
 import { getLocal } from '../../utils/local'
 import { apiGetArticleList } from '../../api/aritcle'
+// 导入弹出层组件
+import mypop from './components/mypop'
 export default {
+  components: {
+    mypop
+  },
   data () {
     return {
       // list: [],
@@ -41,10 +48,15 @@ export default {
       // isLoading: false,
       // 频道数据
       channelList: [],
-      active: 0
+      active: 0,
+      // 控制弹出面板
+      show: false
     }
   },
   methods: {
+    openchannel () {
+      this.show = true
+    },
     // list 的事件：当 list 组件被加载时会执行
     async onLoad () {
       // 得到当前频道
@@ -133,7 +145,7 @@ export default {
   position: fixed;
   top: 46px;
   left: 0px;
-  z-index: 999999;
+  z-index: 99;
   width: 90%;
 };
 .mymenu {
