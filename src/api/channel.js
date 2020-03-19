@@ -6,6 +6,24 @@ function apiChannel () {
   })
 }
 
+function apiAllChannels () {
+  return http({
+    url: '/channels'
+  })
+}
+// 重置频道数据
+function apiResetChannle (channels) {
+  return http({
+    url: '/user/channels',
+    method: 'PUT',
+    data: {
+      channels: channels
+    }
+  })
+}
+
 export {
-  apiChannel
+  apiChannel,
+  apiAllChannels,
+  apiResetChannle
 }

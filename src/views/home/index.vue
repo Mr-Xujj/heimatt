@@ -23,7 +23,8 @@
     </div>
 <!-- 弹出层 -->
 <!-- <mypop :value="show" @input="show=$event"/> -->
-<mypop v-model="show"/>
+<!-- <mypop v-model="show" :mypopChannelList="channelList" :active="active" @cactive="active=$event"/> -->
+<mypop v-model="show" :mypopChannelList="channelList" :active.sync="active"/>
   </div>
 </template>
 
