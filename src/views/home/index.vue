@@ -21,7 +21,7 @@
     <div class="imgbox">
       <van-grid :border="false" :column-num="3">
   <van-grid-item v-for="(imgitem,imgindex) in subitem.cover.images" :key="imgindex">
-    <van-image src="https://img.yzcdn.cn/vant/apple-1.jpg" />
+    <van-image lazy-load :src="imgitem" />
   </van-grid-item>
 </van-grid>
     </div>
