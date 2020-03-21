@@ -74,7 +74,7 @@ export default {
           this.$router.push('/home')
         } catch {
           // 出错要执行的代码
-          window.console.log('登录失败')
+          // window.console.log('登录失败')
           this.$toast.fail('登陆失败')
         }
         this.loginLoading = false

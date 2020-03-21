@@ -13,7 +13,32 @@
   :finished="item.finished"
   finished-text="没有更多了"
   @load="onLoad">
-  <van-cell class="mycell" v-for="(item, index) in item.list" :key="index" :title="item.title" />
+  <van-cell class="mycell" v-for="(subitem, subindex) in item.list" :key="subindex">
+    <!-- 文章标题 -->
+    <template slot="title">
+        <div>{{subitem.title}}</div>
+    <!-- 文章图片 -->
+    <div class="imgbox">
+      <van-grid :border="false" :column-num="3">
+  <van-grid-item v-for="(imgitem,imgindex) in subitem.cover.images" :key="imgindex">
+    <van-image src="https://img.yzcdn.cn/vant/apple-1.jpg" />
+  </van-grid-item>
+</van-grid>
+    </div>
+    <!-- 文章作者评论时间 -->
+    <div class="other">
+      <div class="allother">
+        <span>{{subitem.aut_name}}</span>
+        <span>{{subitem.comm_count}}评论</span>
+        <span>{{subitem.pubdate}}</span>
+      </div>
+      <div class="chacha">
+        <van-icon name="cross" />
+      </div>
+    </div>
+    </template>
+
+  </van-cell>
 </van-list>
 </van-pull-refresh>
   </van-tab>
@@ -71,6 +96,7 @@ export default {
       })
       // 将文章列表数据保存到当前频道下面的 list 属性中
       currentChannle.list = [...currentChannle.list, ...res.data.data.results]
+      window.console.log(res.data.data.results)
       // 判断返回数据的长度
       if (res.data.data.results.length === 0) {
         // 将 list 的加载完毕状态设置为 true
@@ -160,8 +186,20 @@ export default {
   text-align: center;
   font-weight: 700
 }
-.mycell {
-  height: 150px;
+.other{
+  display: flex;
+  justify-content: space-between;
+}
+.allother span{
+  margin-right: 10px;
+}
+.chacha{
+ border: 1px solid #ccc;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    color: #ccc;
 }
 }
 
