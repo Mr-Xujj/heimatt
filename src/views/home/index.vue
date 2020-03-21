@@ -30,7 +30,7 @@
       <div class="allother">
         <span>{{subitem.aut_name}}</span>
         <span>{{subitem.comm_count}}评论</span>
-        <span>{{subitem.pubdate}}</span>
+        <span>{{subitem.pubdate | timefilter}}</span>
       </div>
       <div class="chacha">
         <van-icon name="cross" />

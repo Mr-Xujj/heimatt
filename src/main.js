@@ -7,6 +7,8 @@ import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.css'
 // 导入iconfont
 import './style/iconfont.css'
+// 全局过滤器
+import './filters/timefilters'
 Vue.use(Vant)
 // 图片懒加载
 Vue.use(Lazyload)
