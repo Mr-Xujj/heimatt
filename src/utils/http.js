@@ -2,9 +2,19 @@ import axios from 'axios'
 
 import store from '../store'
 
+import jsonbigint from 'json-bigint'
+
 const instance = axios.create({
   // 设置基地址
-  baseURL: 'http://ttapi.research.itcast.cn/app/v1_0/'
+  baseURL: 'http://ttapi.research.itcast.cn/app/v1_0/',
+  // 对请求回来的数据进行精度处理
+  transformResponse: [function (data) {
+    try {
+      return jsonbigint.parse(data)
+    } catch (error) {
+      return JSON.parse(data)
+    }
+  }]
 })
 // 请求拦截器
 instance.interceptors.request.use(function (config) {

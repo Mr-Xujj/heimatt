@@ -11,6 +11,18 @@ function apiGetArticleList ({ channelid, timestamp }) {
     }
   })
 }
+// 将文章设置为不感兴趣
+// 将文章设置为不喜欢
+function apiNoLike (artid) {
+  return http({
+    url: '/article/dislikes',
+    method: 'POST',
+    data: {
+      target: artid
+    }
+  })
+}
 export {
-  apiGetArticleList
+  apiGetArticleList,
+  apiNoLike
 }

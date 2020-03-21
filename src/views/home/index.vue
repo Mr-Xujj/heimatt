@@ -33,7 +33,7 @@
         <span>{{subitem.pubdate | timefilter}}</span>
       </div>
       <div class="chacha">
-        <van-icon name="cross" />
+        <van-icon @click="openmore(subitem.art_id)" name="cross" />
       </div>
     </div>
     </template>
@@ -50,6 +50,9 @@
 <!-- <mypop :value="show" @input="show=$event"/> -->
 <!-- <mypop v-model="show" :mypopChannelList="channelList" :active="active" @cactive="active=$event"/> -->
 <mypop v-model="show" :mypopChannelList="channelList" :active.sync="active"/>
+<!-- 更多面板 -->
+<!-- <more :value="moreshow" @input="moreshow=$event" /> -->
+<more v-model="moreshow" :artid="artid" @delChannel="delChannel" />
   </div>
 </template>
 
@@ -59,9 +62,12 @@ import { getLocal } from '../../utils/local'
 import { apiGetArticleList } from '../../api/aritcle'
 // 导入弹出层组件
 import mypop from './components/mypop'
+// 导入更多面板
+import more from './components/more'
 export default {
   components: {
-    mypop
+    mypop,
+    more
   },
   data () {
     return {
@@ -76,7 +82,11 @@ export default {
       channelList: [],
       active: 0,
       // 控制弹出面板
-      show: false
+      show: false,
+      // 更多
+      moreshow: false,
+      // 文章id
+      artid: 0
     }
   },
   methods: {
@@ -123,6 +133,23 @@ export default {
         this.$set(item, 'finished', false)
         this.$set(item, 'isloading', false)
         this.$set(item, 'list', [])
+      })
+    },
+    // 打开更多面板
+    openmore (artid) {
+      this.moreshow = true
+      // window.console.log(artid)
+      this.artid = artid
+    },
+    // 删除文章
+    delChannel () {
+      // 得到当前频道文章数据
+      const dataList = this.channelList[this.active].list
+      // window.console.log(dataList)
+      dataList.forEach((item, index) => {
+        if (item.art_id === this.artid) {
+          dataList.splice(index, 1)
+        }
       })
     }
   },
