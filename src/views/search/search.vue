@@ -42,7 +42,9 @@ export default {
       //   是否显示联想
       isthink: false,
       //   联想结果
-      ThinkList: []
+      ThinkList: [],
+      //   防抖定时器
+      timer: null
     }
   },
   methods: {
@@ -51,19 +53,32 @@ export default {
     },
     onCancel () {
       window.console.log('cancel')
+      //   点击取消清空
+      this.value = ''
+      this.ThinkList = []
     },
     // 搜索联想
     async think () {
-      const res = await apiThink(this.value)
-      this.ThinkList = res.data.data.options
-      window.console.log(this.ThinkList)
-      //   关键字高亮
-      this.ThinkList = this.ThinkList.map(item => {
-        return {
-          oldItem: item,
-          newItem: item.split(this.value).join(`<span style="color: red">${this.value}</span>`)
+      // 清除定时器
+      clearTimeout(this.timer)
+
+      this.timer = setTimeout(async () => {
+        // 判断搜索内容是否为空
+        if (this.value.trim().length <= 0) {
+          this.ThinkList = []
+          return
         }
-      })
+        const res = await apiThink(this.value)
+        this.ThinkList = res.data.data.options
+        window.console.log(this.ThinkList)
+        //   关键字高亮
+        this.ThinkList = this.ThinkList.map(item => {
+          return {
+            oldItem: item,
+            newItem: item.split(this.value).join(`<span style="color: red">${this.value}</span>`)
+          }
+        })
+      }, 1000)
     }
 
   }
