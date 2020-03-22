@@ -20,12 +20,12 @@
         <van-cell-group v-else>
   <van-cell title="搜索历史">
       <template slot="default">
-<van-icon name="delete" />
+<van-icon name="delete" @click="delAll" />
       </template>
   </van-cell>
-  <van-cell icon="search" title="单元格">
+  <van-cell @click="onSearch(item)" v-for="(item,index) in historyList" :key="index" icon="search" :title="item">
       <template slot="right-icon">
-<van-icon name="cross" />
+<van-icon name="cross" @click.stop="del(item)" />
       </template>
   </van-cell>
 </van-cell-group>
@@ -34,6 +34,7 @@
 
 <script>
 import { apiThink } from '../../api/search.js'
+import { getLocal, setLocal } from '../../utils/local'
 export default {
   data () {
     return {
@@ -44,11 +45,22 @@ export default {
       //   联想结果
       ThinkList: [],
       //   防抖定时器
-      timer: null
+      timer: null,
+      //   搜索历史数据
+      historyList: []
     }
   },
   methods: {
     onSearch (key) {
+      if (key.trim().length <= 0) {
+        return
+      }
+      this.historyList.unshift(key)
+      //   去重
+      this.historyList = [...new Set(this.historyList)]
+      // 保存到本地
+      setLocal('history', this.historyList)
+
       this.$router.push(`/searchResult/${key}`)
     },
     onCancel () {
@@ -79,8 +91,33 @@ export default {
           }
         })
       }, 1000)
+    },
+    // 删除历史纪录
+    del (subitem) {
+      this.historyList.forEach((item, index) => {
+        if (item === subitem) {
+          this.historyList.splice(index, 1)
+        }
+      })
+      // 保存到本地
+      setLocal('history', this.historyList)
+    },
+    delAll () {
+      this.$dialog.confirm({
+        title: '警告⚠',
+        message: 'are you suer'
+      }).then(() => {
+        this.historyList = []
+        // 保存到本地
+        setLocal('history', this.historyList)
+      }).catch(() => {
+        window.console.log('取消')
+      })
     }
 
+  },
+  created () {
+    this.historyList = getLocal('history') || []
   }
 }
 </script>
