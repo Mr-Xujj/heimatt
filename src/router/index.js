@@ -9,6 +9,8 @@ import Layout from '../views/layout'
 import home from '../views/home'
 // 导入搜索页
 import Search from '../views/search/search.vue'
+// 导入搜索结果页
+import SearchResult from '../views/searchResult/searchResult.vue'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -39,6 +41,10 @@ const router = new VueRouter({
         }
       ]
 
+    },
+    {
+      path: '/searchResult/:key',
+      component: SearchResult
     }
   ]
 })
