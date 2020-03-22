@@ -22,7 +22,20 @@ function apiNoLike (artid) {
     }
   })
 }
+// 反馈
+function apiReport ({ artid, type }) {
+  return http({
+    url: 'article/reports',
+    method: 'POST',
+    data: {
+      target: artid,
+      type: type,
+      remark: ''
+    }
+  })
+}
 export {
   apiGetArticleList,
-  apiNoLike
+  apiNoLike,
+  apiReport
 }
