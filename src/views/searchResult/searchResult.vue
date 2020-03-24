@@ -11,18 +11,18 @@
     <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
   <!-- 上拉加载 -->
   <van-list v-model="loading" :finished="finished" finished-text="没有更多了"  @load="onLoad">
-  <van-cell v-for="item in 3" :key="item" :title="item" >
+  <van-cell v-for="(item, index) in searchResult" :key="index" >
     <template slot="title">
-<h4>标题</h4>
-<van-grid :border="false" :column-num="3">
-  <van-grid-item v-for="(imgitem, imgindex) in 3 " :key="imgindex" >
-    <van-image src="https://img.yzcdn.cn/vant/apple-1.jpg" />
-  </van-grid-item>
-</van-grid>
+<h4>{{item.title}}</h4>
+ <van-grid v-if="item.cover.type > 0" :border="false" :column-num="3">
+                    <van-grid-item v-for="(imgitem, imgindex) in item.cover.images" :key="imgindex">
+                        <van-image :src="imgitem" />
+                    </van-grid-item>
+                </van-grid>
 <div class="searchBox">
-  <span>作者</span>
-  <span>品论</span>
-  <span>时间</span>
+      <span>{{ item.aut_name }}</span>
+                    <span>{{ item.comm_count }}评论</span>
+                    <span>{{ item.pubdate | timefilter }}</span>
 </div>
 <van-grid :column-num="3">
   <van-grid-item icon="comment-o" text="品论" />
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { apiGetSearchResult } from '../../api/search'
 export default {
   data () {
     return {
@@ -47,7 +48,15 @@ export default {
       // 完毕状态
       finished: false,
       // 加载数据源
-      list: []
+      list: [],
+      // 搜索的关键字
+      key: '',
+      // 当前页
+      page: 0,
+      // 每页的条数
+      perpage: 10,
+      // 搜索的结果
+      searchResult: []
     }
   },
   methods: {
@@ -56,12 +65,35 @@ export default {
     },
     // 下拉刷新
     onRefresh () {
-
+      window.console.log('刷新')
     },
     // 加载
-    onLoad () {
-
+    async onLoad () {
+      this.page = this.page + 1
+      // 请求页面数据
+      try {
+        const res = await apiGetSearchResult({
+          page: this.page,
+          perpage: this.perpage,
+          q: this.key
+        })
+        window.console.log(res)
+        // this.searchResult = res.data.data.results
+        this.searchResult = [...this.searchResult, ...res.data.data.results]
+        if (res.data.data.results.length <= 0) {
+          this.finished = true
+        }
+        // 将请求状态设置为 false
+        this.loading = false
+      } catch {
+        window.console.log('出错')
+      }
     }
+  },
+  created () {
+    // 获取动态路由中的参数
+    this.key = this.$route.params.key
+    window.console.log(this.key)
   }
 }
 </script>
